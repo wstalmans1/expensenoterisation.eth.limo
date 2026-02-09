@@ -16,7 +16,7 @@ const sepoliaTransport = isMobileDevice()
   : webSocket(ALCHEMY_WS_SEPOLIA)
 
 export const wagmiConfig = getDefaultConfig({
-  appName: 'Expense Notarization',
+  appName: 'Expense Noterisation',
   projectId,
   chains: SUPPORTED_CHAINS,
   transports: {

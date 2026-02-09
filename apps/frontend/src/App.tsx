@@ -42,6 +42,54 @@ export default function App() {
   const [description, setDescription] = useState('')
   const [formError, setFormError] = useState<string | null>(null)
   const [lookupInput, setLookupInput] = useState('')
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === 'undefined') return false
+    const stored = window.localStorage.getItem('expense-theme')
+    if (stored) return stored === 'dark'
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false
+  })
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem('expense-theme', isDark ? 'dark' : 'light')
+  }, [isDark])
+
+  const theme = useMemo(
+    () => ({
+      page: isDark
+        ? 'min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-slate-100'
+        : 'min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-slate-100 text-neutral-900',
+      kicker: isDark ? 'text-slate-400' : 'text-neutral-500',
+      heading: isDark ? 'text-slate-100' : 'text-neutral-900',
+      body: isDark ? 'text-slate-200' : 'text-neutral-600',
+      subheading: isDark ? 'text-slate-200' : 'text-neutral-700',
+      section: isDark
+        ? 'border-white/10 bg-slate-900/70 text-slate-200'
+        : 'border-black/10 bg-white/70 text-neutral-600',
+      panel: isDark
+        ? 'border-white/10 bg-slate-900/80'
+        : 'border-black/10 bg-white/80',
+      input: isDark
+        ? 'border-white/10 bg-slate-950 text-slate-100 placeholder:text-slate-500 focus:border-slate-400'
+        : 'border-black/10 bg-white text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-400',
+      link: isDark ? 'text-amber-300' : 'text-amber-700',
+      card: isDark ? 'border-white/10 bg-slate-950/60' : 'border-black/5 bg-white',
+      note: isDark
+        ? 'border-white/10 bg-slate-900/60 text-slate-300'
+        : 'border-neutral-200 bg-neutral-50 text-neutral-600',
+      warning: isDark
+        ? 'border-amber-500/40 bg-amber-500/10 text-amber-100'
+        : 'border-amber-200 bg-amber-50 text-amber-900',
+      error: isDark
+        ? 'border-red-500/40 bg-red-500/10 text-red-100'
+        : 'border-red-200 bg-red-50 text-red-700',
+      button: isDark
+        ? 'bg-amber-800 text-slate-200 hover:bg-amber-700'
+        : 'bg-neutral-900 text-white hover:bg-neutral-800',
+      muted: isDark ? 'text-slate-500' : 'text-neutral-400',
+    }),
+    [isDark]
+  )
 
   const hasContract = Boolean(EXPENSE_REGISTRY_ADDRESS)
   const contractAddress =
@@ -170,38 +218,64 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-slate-100">
+    <div className={theme.page}>
       <div className="mx-auto max-w-6xl px-6 py-10">
         <header className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.3em] text-neutral-500">
+            <p
+              className={`text-xs uppercase tracking-[0.3em] ${theme.kicker}`}
+            >
               On-chain expense log
             </p>
-            <h1 className="text-3xl font-semibold text-neutral-900 md:text-4xl">
-              Expense Notarization
+            <h1
+              className={`text-3xl font-semibold md:text-4xl ${theme.heading}`}
+            >
+              Expense Notarisation
             </h1>
-            <p className="max-w-xl text-sm text-neutral-600">
+            <p className={`max-w-xl text-sm ${theme.body}`}>
               Register and check expenses on-chain.
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsDark((prev) => !prev)}
+              aria-pressed={isDark}
+              aria-label="Toggle dark theme"
+              className={`relative inline-flex h-8 w-14 items-center rounded-full border p-1 transition ${
+                isDark
+                  ? 'border-white/15 bg-slate-900'
+                  : 'border-black/10 bg-white/70'
+              }`}
+            >
+              <span
+                className={`h-6 w-6 transform rounded-full shadow-sm transition ${
+                  isDark ? 'translate-x-6 bg-amber-300' : 'translate-x-0 bg-neutral-900'
+                }`}
+              />
+            </button>
+            <span className={`text-xs font-semibold ${theme.kicker}`}>
+              {isDark ? 'Dark' : 'Light'}
+            </span>
             <ConnectButton />
           </div>
         </header>
 
-        <section className="mt-6 rounded-3xl border border-black/10 bg-white/70 px-6 py-4 text-xs text-neutral-600">
-          <div className="mb-3 font-semibold text-neutral-700">
+        <section
+          className={`mt-6 rounded-3xl border px-6 py-4 text-xs ${theme.section}`}
+        >
+          <div className={`mb-3 font-semibold ${theme.subheading}`}>
             Network: Sepolia (ID 11155111)
           </div>
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <div>
-              <span className="font-semibold text-neutral-700">Proxy:</span>{' '}
+              <span className={`font-semibold ${theme.subheading}`}>Proxy:</span>{' '}
               {EXPENSE_REGISTRY_ADDRESS ? (
                 <a
                   href={`${blockscoutBase}${EXPENSE_REGISTRY_ADDRESS}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="font-mono text-amber-700 underline-offset-2 transition hover:underline"
+                  className={`font-mono underline-offset-2 transition hover:underline ${theme.link}`}
                 >
                   {EXPENSE_REGISTRY_ADDRESS}
                 </a>
@@ -210,7 +284,7 @@ export default function App() {
               )}
             </div>
             <div>
-              <span className="font-semibold text-neutral-700">
+              <span className={`font-semibold ${theme.subheading}`}>
                 Implementation:
               </span>{' '}
               {EXPENSE_REGISTRY_IMPLEMENTATION_ADDRESS ? (
@@ -218,7 +292,7 @@ export default function App() {
                   href={`${blockscoutBase}${EXPENSE_REGISTRY_IMPLEMENTATION_ADDRESS}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="font-mono text-amber-700 underline-offset-2 transition hover:underline"
+                  className={`font-mono underline-offset-2 transition hover:underline ${theme.link}`}
                 >
                   {EXPENSE_REGISTRY_IMPLEMENTATION_ADDRESS}
                 </a>
@@ -230,29 +304,35 @@ export default function App() {
         </section>
 
         <div className="mt-10 grid gap-6 lg:grid-cols-[1.1fr_1.4fr]">
-          <section className="rounded-3xl border border-black/10 bg-white/80 p-6 shadow-sm backdrop-blur">
-            <h2 className="text-lg font-semibold text-neutral-900">
+          <section
+            className={`rounded-3xl border p-6 shadow-sm backdrop-blur ${theme.panel}`}
+          >
+            <h2 className={`text-lg font-semibold ${theme.heading}`}>
               Register expense
             </h2>
-            <p className="mt-1 text-sm text-neutral-600">
+            <p className={`mt-1 text-sm ${theme.body}`}>
               Store date, amount, and a short description on-chain.
             </p>
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div className="grid gap-3">
-                <label className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                <label
+                  className={`text-xs font-semibold uppercase tracking-wide ${theme.kicker}`}
+                >
                   Date
                 </label>
                 <input
                   type="date"
                   value={date}
                   onChange={(event) => setDate(event.target.value)}
-                  className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-neutral-900 shadow-sm outline-none transition focus:border-neutral-400"
+                  className={`w-full rounded-2xl border px-4 py-3 text-sm shadow-sm outline-none transition ${theme.input}`}
                 />
               </div>
 
               <div className="grid gap-3">
-                <label className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                <label
+                  className={`text-xs font-semibold uppercase tracking-wide ${theme.kicker}`}
+                >
                   Amount (EUR, integer)
                 </label>
                 <input
@@ -262,12 +342,14 @@ export default function App() {
                   value={amount}
                   onChange={(event) => setAmount(event.target.value)}
                   placeholder="120"
-                  className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-neutral-900 shadow-sm outline-none transition focus:border-neutral-400"
+                  className={`w-full rounded-2xl border px-4 py-3 text-sm shadow-sm outline-none transition ${theme.input}`}
                 />
               </div>
 
               <div className="grid gap-3">
-                <label className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                <label
+                  className={`text-xs font-semibold uppercase tracking-wide ${theme.kicker}`}
+                >
                   Description
                 </label>
                 <textarea
@@ -275,18 +357,22 @@ export default function App() {
                   value={description}
                   onChange={(event) => setDescription(event.target.value)}
                   placeholder="Lunch with team"
-                  className="w-full resize-none rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-neutral-900 shadow-sm outline-none transition focus:border-neutral-400"
+                  className={`w-full resize-none rounded-2xl border px-4 py-3 text-sm shadow-sm outline-none transition ${theme.input}`}
                 />
               </div>
 
               {formError && (
-                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                <div
+                  className={`rounded-2xl border px-4 py-3 text-sm ${theme.warning}`}
+                >
                   {formError}
                 </div>
               )}
 
               {writeError && (
-                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <div
+                  className={`rounded-2xl border px-4 py-3 text-sm ${theme.error}`}
+                >
                   {writeError.message}
                 </div>
               )}
@@ -294,7 +380,7 @@ export default function App() {
               <button
                 type="submit"
                 disabled={!isConnected || isPending || isConfirming}
-                className="inline-flex w-full items-center justify-center rounded-2xl bg-neutral-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className={`inline-flex w-full items-center justify-center rounded-2xl px-6 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${theme.button}`}
               >
                 {isPending
                   ? 'Waiting for signature...'
@@ -304,7 +390,9 @@ export default function App() {
               </button>
 
               {!hasContract && (
-                <div className="rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-xs text-neutral-600">
+                <div
+                  className={`rounded-2xl border px-4 py-3 text-xs ${theme.note}`}
+                >
                   Contract address missing. Deploy the contract and set
                   VITE_EXPENSE_REGISTRY_ADDRESS.
                 </div>
@@ -312,18 +400,20 @@ export default function App() {
             </form>
           </section>
 
-          <section className="rounded-3xl border border-black/10 bg-white/80 p-6 shadow-sm backdrop-blur">
+          <section
+            className={`rounded-3xl border p-6 shadow-sm backdrop-blur ${theme.panel}`}
+          >
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-neutral-900">
+                <h2 className={`text-lg font-semibold ${theme.heading}`}>
                   Your past expenses
                 </h2>
-                <p className="mt-1 text-sm text-neutral-600">
+                <p className={`mt-1 text-sm ${theme.body}`}>
                   Your on-chain history appears here.
                 </p>
               </div>
               {isFetching && (
-                <span className="text-xs font-semibold text-neutral-500">
+                <span className={`text-xs font-semibold ${theme.kicker}`}>
                   Updating...
                 </span>
               )}
@@ -331,25 +421,33 @@ export default function App() {
 
             <div className="mt-6 space-y-3">
               {!isConnected && (
-                <div className="rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 px-4 py-6 text-sm text-neutral-600">
+                <div
+                  className={`rounded-2xl border border-dashed px-4 py-6 text-sm ${theme.note}`}
+                >
                   Connect a wallet to see your expense list.
                 </div>
               )}
 
               {isConnected && readError && (
-                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <div
+                  className={`rounded-2xl border px-4 py-3 text-sm ${theme.error}`}
+                >
                   {readError.message}
                 </div>
               )}
 
               {isConnected && isLoading && (
-                <div className="rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-6 text-sm text-neutral-600">
+                <div
+                  className={`rounded-2xl border px-4 py-6 text-sm ${theme.note}`}
+                >
                   Loading expenses...
                 </div>
               )}
 
               {isConnected && !isLoading && expenses?.length === 0 && (
-                <div className="rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-6 text-sm text-neutral-600">
+                <div
+                  className={`rounded-2xl border px-4 py-6 text-sm ${theme.note}`}
+                >
                   No expenses recorded yet.
                 </div>
               )}
@@ -365,22 +463,28 @@ export default function App() {
                     .map(({ expense, index }) => (
                       <div
                         key={`${index}-${expense.date.toString()}`}
-                        className="rounded-2xl border border-black/5 bg-white px-5 py-4 shadow-sm"
+                        className={`rounded-2xl border px-5 py-4 shadow-sm ${theme.card}`}
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div>
-                            <p className="text-sm font-semibold text-neutral-900">
+                            <p
+                              className={`text-sm font-semibold ${theme.heading}`}
+                            >
                               {expense.description}
                             </p>
-                            <p className="mt-1 text-xs text-neutral-500">
+                            <p className={`mt-1 text-xs ${theme.kicker}`}>
                               {formatDate(expense.date)}
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="text-sm font-semibold text-neutral-900">
+                            <p
+                              className={`text-sm font-semibold ${theme.heading}`}
+                            >
                               {formatAmount(expense.amount)} EUR
                             </p>
-                            <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-neutral-400">
+                            <p
+                              className={`mt-1 text-[10px] uppercase tracking-[0.2em] ${theme.muted}`}
+                            >
                               &nbsp;
                             </p>
                           </div>
@@ -392,11 +496,13 @@ export default function App() {
             </div>
           </section>
 
-          <section className="rounded-3xl border border-black/10 bg-white/80 p-6 shadow-sm backdrop-blur">
-            <h2 className="text-lg font-semibold text-neutral-900">
+          <section
+            className={`rounded-3xl border p-6 shadow-sm backdrop-blur ${theme.panel}`}
+          >
+            <h2 className={`text-lg font-semibold ${theme.heading}`}>
               Lookup expenses by address
             </h2>
-            <p className="mt-1 text-sm text-neutral-600">
+            <p className={`mt-1 text-sm ${theme.body}`}>
               Paste any account to view its recorded expenses.
             </p>
 
@@ -406,23 +512,29 @@ export default function App() {
                 value={lookupInput}
                 onChange={(event) => setLookupInput(event.target.value)}
                 placeholder="0x..."
-                className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-neutral-900 shadow-sm outline-none transition focus:border-neutral-400"
+                className={`w-full rounded-2xl border px-4 py-3 text-sm shadow-sm outline-none transition ${theme.input}`}
               />
 
               {lookupInput.trim().length > 0 && !lookupAddress && (
-                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                <div
+                  className={`rounded-2xl border px-4 py-3 text-sm ${theme.warning}`}
+                >
                   Enter a valid 0x address to load expenses.
                 </div>
               )}
 
               {lookupReadError && (
-                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <div
+                  className={`rounded-2xl border px-4 py-3 text-sm ${theme.error}`}
+                >
                   {lookupReadError.message}
                 </div>
               )}
 
               {lookupAddress && lookupLoading && (
-                <div className="rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-6 text-sm text-neutral-600">
+                <div
+                  className={`rounded-2xl border px-4 py-6 text-sm ${theme.note}`}
+                >
                   Loading expenses...
                 </div>
               )}
@@ -430,7 +542,9 @@ export default function App() {
               {lookupAddress &&
                 !lookupLoading &&
                 lookupExpenses?.length === 0 && (
-                  <div className="rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-6 text-sm text-neutral-600">
+                  <div
+                    className={`rounded-2xl border px-4 py-6 text-sm ${theme.note}`}
+                  >
                     No expenses found for this address.
                   </div>
                 )}
@@ -449,22 +563,28 @@ export default function App() {
                       .map(({ expense, index }) => (
                         <div
                           key={`${index}-${expense.date.toString()}`}
-                          className="rounded-2xl border border-black/5 bg-white px-5 py-4 shadow-sm"
+                          className={`rounded-2xl border px-5 py-4 shadow-sm ${theme.card}`}
                         >
                           <div className="flex items-start justify-between gap-4">
                             <div>
-                              <p className="text-sm font-semibold text-neutral-900">
+                              <p
+                                className={`text-sm font-semibold ${theme.heading}`}
+                              >
                                 {expense.description}
                               </p>
-                              <p className="mt-1 text-xs text-neutral-500">
+                              <p className={`mt-1 text-xs ${theme.kicker}`}>
                                 {formatDate(expense.date)}
                               </p>
                             </div>
                             <div className="text-right">
-                              <p className="text-sm font-semibold text-neutral-900">
+                              <p
+                                className={`text-sm font-semibold ${theme.heading}`}
+                              >
                                 {formatAmount(expense.amount)} EUR
                               </p>
-                              <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-neutral-400">
+                              <p
+                                className={`mt-1 text-[10px] uppercase tracking-[0.2em] ${theme.muted}`}
+                              >
                                 &nbsp;
                               </p>
                             </div>
