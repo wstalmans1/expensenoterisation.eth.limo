@@ -1,8 +1,8 @@
-# Expense Noterisation DApp
+# Expense Notarization DApp
 
 Register expenses on-chain and view past records.
 
-UI: `https://expensenoterisation.eth.limo/`
+UI: `https://expensenotarization.eth.limo/`
 
 **Requirements**
 - Node.js >= 18

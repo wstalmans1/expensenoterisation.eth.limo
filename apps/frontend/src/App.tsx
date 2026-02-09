@@ -3,7 +3,6 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   useAccount,
-  useChainId,
   useReadContract,
   useWaitForTransactionReceipt,
   useWriteContract,
@@ -35,7 +34,6 @@ function formatAmount(amount: bigint) {
 
 export default function App() {
   const { address, isConnected } = useAccount()
-  const chainId = useChainId()
   const queryClient = useQueryClient()
   const { open } = useModalStore()
 
@@ -122,7 +120,7 @@ export default function App() {
     setDate('')
     setAmount('')
     setDescription('')
-  }, [address, chainId, isConfirmed, open, queryClient])
+  }, [address, isConfirmed, open, queryClient])
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -180,21 +178,21 @@ export default function App() {
               On-chain expense log
             </p>
             <h1 className="text-3xl font-semibold text-neutral-900 md:text-4xl">
-              Expense Noterisation
+              Expense Notarization
             </h1>
             <p className="max-w-xl text-sm text-neutral-600">
               Register and check expenses on-chain.
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1 text-xs font-semibold text-neutral-600">
-              Chain {chainId}
-            </span>
             <ConnectButton />
           </div>
         </header>
 
         <section className="mt-6 rounded-3xl border border-black/10 bg-white/70 px-6 py-4 text-xs text-neutral-600">
+          <div className="mb-3 font-semibold text-neutral-700">
+            Network: Sepolia (ID 11155111)
+          </div>
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <div>
               <span className="font-semibold text-neutral-700">Proxy:</span>{' '}
