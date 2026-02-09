@@ -255,7 +255,7 @@ export default function App() {
 
               <div className="grid gap-3">
                 <label className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                  Amount (integer)
+                  Amount (EUR, integer)
                 </label>
                 <input
                   type="number"
@@ -380,10 +380,10 @@ export default function App() {
                           </div>
                           <div className="text-right">
                             <p className="text-sm font-semibold text-neutral-900">
-                              {formatAmount(expense.amount)}
+                              {formatAmount(expense.amount)} EUR
                             </p>
                             <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-neutral-400">
-                              Units
+                              &nbsp;
                             </p>
                           </div>
                         </div>
@@ -464,10 +464,10 @@ export default function App() {
                             </div>
                             <div className="text-right">
                               <p className="text-sm font-semibold text-neutral-900">
-                                {formatAmount(expense.amount)}
+                                {formatAmount(expense.amount)} EUR
                               </p>
                               <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-neutral-400">
-                                Units
+                                &nbsp;
                               </p>
                             </div>
                           </div>
