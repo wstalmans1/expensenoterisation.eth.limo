@@ -2,6 +2,8 @@
 
 Register expenses on-chain and view past records.
 
+UI: `https://expensenoterisation.eth.limo/`
+
 **Requirements**
 - Node.js >= 18
 - pnpm >= 8
