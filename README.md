@@ -2,7 +2,7 @@
 
 Register expenses on-chain and view past records.
 
-UI: `https://expensenoterisation.eth.limo/`
+UI: [https://expensenotarisation.eth.limo/](https://expensenotarisation.eth.limo/)
 
 **Requirements**
 - Node.js >= 18
